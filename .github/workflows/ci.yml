@@ -63,5 +63,6 @@ jobs:
           if [ "${{ matrix.exclude_export_task }}" == "false" ]; then
             FLAGS=""
           fi
+          touch local.properties
           ./gradlew build $FLAGS
         shell: bash
