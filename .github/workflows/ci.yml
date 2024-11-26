@@ -53,4 +53,4 @@ jobs:
 
       - name: Build with Gradle
         working-directory: ${{ matrix.folder }}
-        run: ./gradlew build --info
+        run: ./gradlew build --exclude-task ":app:export"
