@@ -64,5 +64,5 @@ jobs:
             FLAGS=""
           fi
           touch local.properties
-          ./gradlew build $FLAGS
+          ./gradlew assemble $FLAGS
         shell: bash
