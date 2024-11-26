@@ -32,7 +32,7 @@ jobs:
           - StarterSample
         include:
           - folder: Showcases/focus
-            gradle_flags: ""  # No flags for this folder
+            exclude_export_task: false
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -58,10 +58,10 @@ jobs:
         # Remove the ":app:export" task by default. If a sample app does not have
         # this task then remove the exclude by passing a custom "gradle_flags" param.
         run: |
-          DEFAULT_FLAGS="--exclude-task :app:export"
-          FLAGS="${{ matrix.gradle_flags }}"
-          if [ -z "$FLAGS" ]; then
-            FLAGS="$DEFAULT_FLAGS"
+          EXCLUDE_EXPORT_FLAGS="--exclude-task :app:export"
+          FLAGS=EXCLUDE_EXPORT_FLAGS
+          if [ "${{ matrix.exclude_export_task }}" == "false" ]; then
+            FLAGS=""
           fi
           ./gradlew build $FLAGS
         shell: bash
