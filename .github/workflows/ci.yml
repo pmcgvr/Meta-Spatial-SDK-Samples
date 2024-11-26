@@ -26,23 +26,25 @@ jobs:
           - MrukSample
           - Object3DSample
           - PhysicsSample
-          - Showcases/focus
           - Showcases/geo_voyage
           - Showcases/media_view
           - SpatialVideoSample
           - StarterSample
+        include:
+          - folder: Showcases/focus
+            gradle_flags: ""  # No flags for this folder
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - name: Checkout sources
         uses: actions/checkout@v4
-        
+
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: 17
-          
+
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
@@ -53,4 +55,13 @@ jobs:
 
       - name: Build with Gradle
         working-directory: ${{ matrix.folder }}
-        run: ./gradlew build --exclude-task ":app:export"
+        # Remove the ":app:export" task by default. If a sample app does not have
+        # this task then remove the exclude by passing a custom "gradle_flags" param.
+        run: |
+          DEFAULT_FLAGS="--exclude-task :app:export"
+          FLAGS="${{ matrix.gradle_flags }}"
+          if [ -z "$FLAGS" ]; then
+            FLAGS="$DEFAULT_FLAGS"
+          fi
+          ./gradlew build $FLAGS
+        shell: bash
