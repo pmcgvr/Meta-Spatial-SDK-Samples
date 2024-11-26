@@ -59,7 +59,7 @@ jobs:
         # this task then remove the exclude by passing a custom "gradle_flags" param.
         run: |
           EXCLUDE_EXPORT_FLAGS="--exclude-task :app:export"
-          FLAGS=EXCLUDE_EXPORT_FLAGS
+          FLAGS=$EXCLUDE_EXPORT_FLAGS
           if [ "${{ matrix.exclude_export_task }}" == "false" ]; then
             FLAGS=""
           fi
