@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+  pull_request:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        folder:
+          - AnimationsSample
+          - CodelabStarters/CustomComponentsStarter
+          - CustomComponentsSample
+          - HybridSample
+          - MediaPlayerSample
+          - MixedRealitySample
+          - MrukSample
+          - Object3DSample
+          - PhysicsSample
+          - Showcases/geo_voyage
+          - Showcases/media_view
+          - SpatialVideoSample
+          - StarterSample
+        include:
+          - folder: Showcases/focus
+            exclude_export_task: false
+
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout sources
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "ndk;27.0.12077973"
+
+      - name: Build with Gradle
+        working-directory: ${{ matrix.folder }}
+        # Remove the ":app:export" task by default. If a sample app does not have
+        # this task then remove the exclude by passing a custom "gradle_flags" param.
+        run: |
+          EXCLUDE_EXPORT_FLAGS="--exclude-task :app:export"
+          FLAGS=$EXCLUDE_EXPORT_FLAGS
+          if [ "${{ matrix.exclude_export_task }}" == "false" ]; then
+            FLAGS=""
+          fi
+          touch local.properties
+          ./gradlew assemble $FLAGS
+        shell: bash
